@@ -5,8 +5,13 @@ requires 'Class::Method::Modifiers';
 requires 'Sub::Install';
 requires 'Scalar::Util';
 requires 'URI';
+requires 'Test::Deep';
+requires 'Test::Builder';
 
 on 'test' => sub {
     requires 'Test::More', '0.98';
+    requires 'Test::Exception';
+    requires 'Plack';
+    requires 'Test::TCP';
 };
 
