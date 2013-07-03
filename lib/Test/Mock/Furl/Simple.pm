@@ -138,14 +138,28 @@ sub _process {
         }
     });
 
+    # ($uri, $opt, $expect)
     install_sub({
         into => 'Furl',
         as   => 'stub_request',
         code => sub {
-            my ($self, $uri, $expect) = @_;
-            my $hash = $EXPECT->{refaddr($self)} ||= {};
+            my $self   = shift;
+            my $uri    = shift;
+            my $expect = pop;
+            my $opt    = shift;
+
+            my $hash = $EXPECT->{refaddr(${$self})} ||= {};
             my $array = $hash->{"$uri"} ||= [];
-            push @$array, $expect;
+            push @$array, { expect => $expect, opt => $opt || undef };
+        },
+    });
+
+    install_sub({
+        into => 'Furl',
+        as   => 'stub_reset_all',
+        code => sub {
+            my $self   = shift;
+            $EXPECT->{refaddr(${$self})} = {};
         },
     });
 }
@@ -167,7 +181,7 @@ Test::Mock::Furl::Simple - It's new $module
     Test::Mock::Furl::Simple->add(
         "http://example.com/foo/bar",
         {
-            query => { dameleon => 1 }, header => ...., content => ....
+            query => { dameleon => 1 }, headers => ...., content => ....
         },
         sub {
             content => ..., header => ....,;
@@ -181,6 +195,9 @@ Test::Mock::Furl::Simple - It's new $module
     # lexical
     my $furl = Furl->new;
     $furl->stub_request( "http://example.com/foo/bar", sub { });
+    my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # ok
+    $furl->stub_reset_all;
+    my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # bad
 
 =head1 DESCRIPTION
 
