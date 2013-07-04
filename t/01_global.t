@@ -10,7 +10,7 @@ $Test::Mock::Furl::Constraint::DISABLE_EXTERNAL_ACCESS = 1;
 subtest 'reset' => sub {
     Test::Mock::Furl::Constraint->reset;
 
-    Test::Mock::Furl::Constraint->stub_request("http://example.com", sub {
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
     });
 
     my $furl = Furl->new;
@@ -26,9 +26,9 @@ subtest 'reset' => sub {
 subtest "override response" => sub {
     Test::Mock::Furl::Constraint->reset;
 
-    Test::Mock::Furl::Constraint->stub_request("http://example.com", sub {
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
     });
-    Test::Mock::Furl::Constraint->stub_request("http://example.com", sub {
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
         status => 404, content => "not found", headers => [ 'content-length' => 9 ];
     });
 
@@ -50,11 +50,11 @@ subtest "case http://example.com" => sub {
     Test::Mock::Furl::Constraint->reset;
 
     my $is_call = 0;
-    Test::Mock::Furl::Constraint->stub_request("http://example.com", sub {
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
         $is_call++;
         content => "first content";
     });
-    Test::Mock::Furl::Constraint->stub_request("http://example.com", sub {
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
         $is_call++;
         content => "second content";
     });
@@ -78,7 +78,7 @@ subtest "case http://example.com/" => sub {
 
     my $is_call = 0;
 
-    Test::Mock::Furl::Constraint->stub_request("http://example.com/", sub {
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/", sub {
         $is_call++;
         content => "first content";
     });
@@ -99,7 +99,7 @@ subtest "case http://example.com/foo/bar" => sub {
 
     my $is_call = 0;
 
-    Test::Mock::Furl::Constraint->stub_request("http://example.com/foo/bar", sub {
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/foo/bar", sub {
         $is_call++;
         content => "first content";
     });
@@ -138,7 +138,7 @@ subtest 'expect with query parameter' => sub {
 
     my $is_call = 0;
 
-    Test::Mock::Furl::Constraint->stub_request("http://example.com/foo/bar", {
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/foo/bar", {
         query => [ dameleon => 1 ],
     }, sub {
         $is_call++;
@@ -171,7 +171,7 @@ subtest 'expect with headers' => sub {
 
     my $is_call = 0;
 
-    Test::Mock::Furl::Constraint->stub_request("http://example.com/foo/bar", {
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/foo/bar", {
         headers => [ 'Accept-Encoding' => 'gzip' ],
     }, sub {
         $is_call++;
@@ -208,7 +208,7 @@ subtest 'expect with Content' => sub {
 
     my $is_call = 0;
 
-    Test::Mock::Furl::Constraint->stub_request("http://example.com/foo/bar", {
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/foo/bar", {
         content => [dameleon => 1],
     }, sub {
         $is_call++;

@@ -31,15 +31,16 @@ our $EXPECT = {
     },
 };
 
-# ($uri, $opt, $expect)
+# ($method, $uri, $opt, $expect)
 sub stub_request {
     my $class  = shift;
+    my $method = shift || "any";
     my $uri    = shift;
     my $expect = pop;
     my $opt    = shift;
 
     my $array = $EXPECT->{global}->{"$uri"} ||= [];
-    push @$array, { expect => $expect, opt => $opt || undef };
+    push @$array, { expect => $expect, opt => $opt || undef, method => $method };
 }
 
 sub reset {
@@ -78,8 +79,26 @@ sub __check_content {
     }
 }
 
+sub __check_method {
+    my ($expect_method, $method) = @_;
+
+    if ( $expect_method eq "any" ) {
+        return 1;
+    }
+    elsif ( uc $expect_method eq uc $method ) {
+        return 1;
+    }
+    else {
+        $Tester->croak("method compare is failed\n\nyour request method is $method. but expect method is $expect_method");
+    }
+}
+
 sub _process {
-    my ($sub, $url, $headers, $content) = @_;
+    my ($sub, $method, $url, $headers, $content) = @_;
+
+    # method check
+
+    __check_method($sub->{method}, $method);
 
     # query parameter check
     if ( my $expect_query = $sub->{opt}->{query} ) {
@@ -123,13 +142,13 @@ sub _process {
         if ( my $lexical_hash = $EXPECT->{$addr} ) {
             if ( my $array = $lexical_hash->{$uri} ) {
                 my $sub = @$array > 1 ? shift @$array : $array->[0];
-                return _process($sub, $url, $args{headers} || [], $args{content});
+                return _process($sub, $args{method}, $url, $args{headers} || [], $args{content});
             }
         }
 
         if ( my $array = $EXPECT->{global}->{$uri} ) {
             my $sub = @$array > 1 ? shift @$array : $array->[0];
-            return _process($sub, $url, $args{headers} || [], $args{content});
+            return _process($sub, $args{method}, $url, $args{headers} || [], $args{content});
         }
 
         if ( $DISABLE_EXTERNAL_ACCESS ) {
@@ -140,19 +159,20 @@ sub _process {
         }
     });
 
-    # ($uri, $opt, $expect)
+    # ($method, $uri, $opt, $expect)
     Sub::Install::install_sub({
         into => 'Furl',
         as   => 'stub_request',
         code => sub {
             my $self   = shift;
+            my $method = shift || "any";
             my $uri    = shift;
             my $expect = pop;
             my $opt    = shift;
 
             my $hash = $EXPECT->{Scalar::Util::refaddr(${$self})} ||= {};
             my $array = $hash->{"$uri"} ||= [];
-            push @$array, { expect => $expect, opt => $opt || undef };
+            push @$array, { expect => $expect, opt => $opt || undef, method => $method };
         },
     });
 
@@ -181,7 +201,7 @@ Test::Mock::Furl::Constraint - yet another mock module for Furl
 
     # global
     Test::Mock::Furl::Constraint->stub_request(
-        "http://example.com/foo/bar",
+        any => "http://example.com/foo/bar",
         {
             query => [ dameleon => 1 ], headers => ...., content => ....
         },
@@ -196,7 +216,7 @@ Test::Mock::Furl::Constraint - yet another mock module for Furl
 
     # lexical
     my $furl = Furl->new;
-    $furl->stub_request( "http://example.com/foo/bar", sub { });
+    $furl->stub_request( get => "http://example.com/foo/bar", sub { });
     my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # ok
     $furl->stub_reset;
     my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # bad

@@ -14,7 +14,7 @@ my $server = test_tcp(
 
         $Test::Mock::Furl::Constraint::DISABLE_EXTERNAL_ACCESS = 0;
 
-        Test::Mock::Furl::Constraint->stub_request("http://127.0.0.1:$port", sub {
+        Test::Mock::Furl::Constraint->stub_request( any => "http://127.0.0.1:$port", sub {
             content => "mock";
         });
 

@@ -8,7 +8,7 @@ use Test::Mock::Furl::Constraint;
 my $furl_1 = Furl->new;
 my $furl_2 = Furl->new;
 
-$furl_2->stub_request("http://example.com", sub {
+$furl_2->stub_request( any => "http://example.com", sub {
     status => 404;
 });
 

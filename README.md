@@ -8,7 +8,7 @@ Test::Mock::Furl::Constraint - yet another mock module for Furl
 
     # global
     Test::Mock::Furl::Constraint->stub_request(
-        "http://example.com/foo/bar",
+        any => "http://example.com/foo/bar",
         {
             query => [ dameleon => 1 ], headers => ...., content => ....
         },
@@ -23,7 +23,7 @@ Test::Mock::Furl::Constraint - yet another mock module for Furl
 
     # lexical
     my $furl = Furl->new;
-    $furl->stub_request( "http://example.com/foo/bar", sub { });
+    $furl->stub_request( get => "http://example.com/foo/bar", sub { });
     my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # ok
     $furl->stub_reset;
     my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # bad
