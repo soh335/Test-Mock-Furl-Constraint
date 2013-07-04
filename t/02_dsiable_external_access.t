@@ -4,16 +4,16 @@ use Test::More;
 use Test::TCP;
 use Test::Exception;
 use Furl;
-use Test::Mock::Furl::Simple;
+use Test::Mock::Furl::Constraint;
 use Plack::Loader;
 
 my $server = test_tcp(
     client => sub {
         my $port = shift;
 
-        $Test::Mock::Furl::Simple::DISABLE_EXTERNAL_ACCESS = 0;
+        $Test::Mock::Furl::Constraint::DISABLE_EXTERNAL_ACCESS = 0;
 
-        Test::Mock::Furl::Simple->add("http://127.0.0.1:$port", sub {
+        Test::Mock::Furl::Constraint->add("http://127.0.0.1:$port", sub {
             content => "mock";
         });
 
@@ -24,7 +24,7 @@ my $server = test_tcp(
         $res = $furl->get("http://127.0.0.1:$port"); # match, retrun mock response
         is $res->content, "mock";
 
-        $Test::Mock::Furl::Simple::DISABLE_EXTERNAL_ACCESS = 1;
+        $Test::Mock::Furl::Constraint::DISABLE_EXTERNAL_ACCESS = 1;
 
         throws_ok {
             $furl->get("http://127.0.0.1:$port/foo/bar"); # no match, throw exception

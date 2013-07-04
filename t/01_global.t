@@ -2,21 +2,21 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Exception;
-use Test::Mock::Furl::Simple;
+use Test::Mock::Furl::Constraint;
 use Furl;
 
-$Test::Mock::Furl::Simple::DISABLE_EXTERNAL_ACCESS = 1;
+$Test::Mock::Furl::Constraint::DISABLE_EXTERNAL_ACCESS = 1;
 
 subtest 'reset_all' => sub {
-    Test::Mock::Furl::Simple->reset_all;
+    Test::Mock::Furl::Constraint->reset_all;
 
-    Test::Mock::Furl::Simple->add("http://example.com", sub {
+    Test::Mock::Furl::Constraint->add("http://example.com", sub {
     });
 
     my $furl = Furl->new;
     my $res = $furl->get("http://example.com");
 
-    Test::Mock::Furl::Simple->reset_all;
+    Test::Mock::Furl::Constraint->reset_all;
 
     throws_ok {
         $furl->get("http://example.com");
@@ -24,11 +24,11 @@ subtest 'reset_all' => sub {
 };
 
 subtest "override response" => sub {
-    Test::Mock::Furl::Simple->reset_all;
+    Test::Mock::Furl::Constraint->reset_all;
 
-    Test::Mock::Furl::Simple->add("http://example.com", sub {
+    Test::Mock::Furl::Constraint->add("http://example.com", sub {
     });
-    Test::Mock::Furl::Simple->add("http://example.com", sub {
+    Test::Mock::Furl::Constraint->add("http://example.com", sub {
         status => 404, content => "not found", headers => [ 'content-length' => 9 ];
     });
 
@@ -47,14 +47,14 @@ subtest "override response" => sub {
 };
 
 subtest "case http://example.com" => sub {
-    Test::Mock::Furl::Simple->reset_all;
+    Test::Mock::Furl::Constraint->reset_all;
 
     my $is_call = 0;
-    Test::Mock::Furl::Simple->add("http://example.com", sub {
+    Test::Mock::Furl::Constraint->add("http://example.com", sub {
         $is_call++;
         content => "first content";
     });
-    Test::Mock::Furl::Simple->add("http://example.com", sub {
+    Test::Mock::Furl::Constraint->add("http://example.com", sub {
         $is_call++;
         content => "second content";
     });
@@ -74,11 +74,11 @@ subtest "case http://example.com" => sub {
 };
 
 subtest "case http://example.com/" => sub {
-    Test::Mock::Furl::Simple->reset_all;
+    Test::Mock::Furl::Constraint->reset_all;
 
     my $is_call = 0;
 
-    Test::Mock::Furl::Simple->add("http://example.com/", sub {
+    Test::Mock::Furl::Constraint->add("http://example.com/", sub {
         $is_call++;
         content => "first content";
     });
@@ -95,11 +95,11 @@ subtest "case http://example.com/" => sub {
 };
 
 subtest "case http://example.com/foo/bar" => sub {
-    Test::Mock::Furl::Simple->reset_all;
+    Test::Mock::Furl::Constraint->reset_all;
 
     my $is_call = 0;
 
-    Test::Mock::Furl::Simple->add("http://example.com/foo/bar", sub {
+    Test::Mock::Furl::Constraint->add("http://example.com/foo/bar", sub {
         $is_call++;
         content => "first content";
     });
@@ -134,11 +134,11 @@ subtest "case http://example.com/foo/bar" => sub {
 };
 
 subtest 'expect with query parameter' => sub {
-    Test::Mock::Furl::Simple->reset_all;
+    Test::Mock::Furl::Constraint->reset_all;
 
     my $is_call = 0;
 
-    Test::Mock::Furl::Simple->add("http://example.com/foo/bar", {
+    Test::Mock::Furl::Constraint->add("http://example.com/foo/bar", {
         query => [ dameleon => 1 ],
     }, sub {
         $is_call++;
@@ -167,11 +167,11 @@ subtest 'expect with query parameter' => sub {
 };
 
 subtest 'expect with headers' => sub {
-    Test::Mock::Furl::Simple->reset_all;
+    Test::Mock::Furl::Constraint->reset_all;
 
     my $is_call = 0;
 
-    Test::Mock::Furl::Simple->add("http://example.com/foo/bar", {
+    Test::Mock::Furl::Constraint->add("http://example.com/foo/bar", {
         headers => [ 'Accept-Encoding' => 'gzip' ],
     }, sub {
         $is_call++;
@@ -204,11 +204,11 @@ subtest 'expect with headers' => sub {
 };
 
 subtest 'expect with Content' => sub {
-    Test::Mock::Furl::Simple->reset_all;
+    Test::Mock::Furl::Constraint->reset_all;
 
     my $is_call = 0;
 
-    Test::Mock::Furl::Simple->add("http://example.com/foo/bar", {
+    Test::Mock::Furl::Constraint->add("http://example.com/foo/bar", {
         content => [dameleon => 1],
     }, sub {
         $is_call++;

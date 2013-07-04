@@ -1,13 +1,13 @@
 # NAME
 
-Test::Mock::Furl::Simple - It's new $module
+Test::Mock::Furl::Constraint - It's new $module
 
 # SYNOPSIS
 
-    use Test::Mock::Furl::Simple;
+    use Test::Mock::Furl::Constraint;
 
     # global
-    Test::Mock::Furl::Simple->add(
+    Test::Mock::Furl::Constraint->add(
         "http://example.com/foo/bar",
         {
             query => [ dameleon => 1 ], headers => ...., content => ....
@@ -30,7 +30,7 @@ Test::Mock::Furl::Simple - It's new $module
 
 # DESCRIPTION
 
-Test::Mock::Furl::Simple is ...
+Test::Mock::Furl::Constraint is ...
 
 # LICENSE
 

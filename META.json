@@ -12,7 +12,7 @@
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
       "version" : "2"
    },
-   "name" : "Test-Mock-Furl-Simple",
+   "name" : "Test-Mock-Furl-Constraint",
    "no_index" : {
       "directory" : [
          "t",

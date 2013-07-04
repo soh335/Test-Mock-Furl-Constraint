@@ -1,4 +1,4 @@
-package Test::Mock::Furl::Simple;
+package Test::Mock::Furl::Constraint;
 use 5.008005;
 use strict;
 use warnings;
@@ -109,7 +109,7 @@ sub _process {
         my %args = @_;
 
         unless ( $args{url} ) {
-            $Tester->croak("Test::Furl::Stub::Simple is not supported style that no passing url parameter to Furl::HTTP::request .");
+            $Tester->croak("Test::Furl::Stub::Constraint is not supported style that no passing url parameter to Furl::HTTP::request .");
         }
 
         my $url = URI->new($args{url});
@@ -171,14 +171,14 @@ __END__
 
 =head1 NAME
 
-Test::Mock::Furl::Simple - It's new $module
+Test::Mock::Furl::Constraint - It's new $module
 
 =head1 SYNOPSIS
 
-    use Test::Mock::Furl::Simple;
+    use Test::Mock::Furl::Constraint;
 
     # global
-    Test::Mock::Furl::Simple->add(
+    Test::Mock::Furl::Constraint->add(
         "http://example.com/foo/bar",
         {
             query => [ dameleon => 1 ], headers => ...., content => ....
@@ -201,7 +201,7 @@ Test::Mock::Furl::Simple - It's new $module
 
 =head1 DESCRIPTION
 
-Test::Mock::Furl::Simple is ...
+Test::Mock::Furl::Constraint is ...
 
 =head1 LICENSE
 

@@ -23,8 +23,8 @@ my %args = (
         'Module::Build' => 0.38,
     },
 
-    name            => 'Test-Mock-Furl-Simple',
-    module_name     => 'Test::Mock::Furl::Simple',
+    name            => 'Test-Mock-Furl-Constraint',
+    module_name     => 'Test::Mock::Furl::Constraint',
     allow_pureperl => 0,
 
     script_files => [glob('script/*'), glob('bin/*')],
