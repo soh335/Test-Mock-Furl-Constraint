@@ -133,7 +133,7 @@ sub _process {
         }
 
         if ( $DISABLE_EXTERNAL_ACCESS ) {
-            $Tester->croak("disabled external access");
+            $Tester->croak("disabled external access by Test::Mock::Furl::Constraint");
         }
         else {
             $self->$orig(@_);

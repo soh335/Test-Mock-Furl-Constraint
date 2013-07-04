@@ -28,7 +28,7 @@ my $server = test_tcp(
 
         throws_ok {
             $furl->get("http://127.0.0.1:$port/foo/bar"); # no match, throw exception
-        } qr/^disabled external access/;
+        } qr/^disabled external access by Test::Mock::Furl::Constraint/;
     },
     server => sub {
         my $port = shift;
