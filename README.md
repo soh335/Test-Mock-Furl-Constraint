@@ -1,6 +1,6 @@
 # NAME
 
-Test::Mock::Furl::Constraint - It's new $module
+Test::Mock::Furl::Constraint - yet another mock module for Furl
 
 # SYNOPSIS
 
@@ -30,7 +30,8 @@ Test::Mock::Furl::Constraint - It's new $module
 
 # DESCRIPTION
 
-Test::Mock::Furl::Constraint is yet another mock module for Furl
+Test::Mock::Furl::Constraint is yet another mock module for Furl.
+It provides mock interface for [Furl](http://search.cpan.org/perldoc?Furl).
 
 # SEE ALSO
 

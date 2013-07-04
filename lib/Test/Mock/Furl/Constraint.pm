@@ -171,7 +171,7 @@ __END__
 
 =head1 NAME
 
-Test::Mock::Furl::Constraint - It's new $module
+Test::Mock::Furl::Constraint - yet another mock module for Furl
 
 =head1 SYNOPSIS
 
@@ -201,7 +201,8 @@ Test::Mock::Furl::Constraint - It's new $module
 
 =head1 DESCRIPTION
 
-Test::Mock::Furl::Constraint is yet another mock module for Furl
+Test::Mock::Furl::Constraint is yet another mock module for Furl.
+It provides mock interface for L<Furl>.
 
 =head1 SEE ALSO
 
