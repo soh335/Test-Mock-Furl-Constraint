@@ -108,7 +108,6 @@ sub _process {
     my ($sub, $method, $url, $headers, $content) = @_;
 
     # method check
-
     __check_method($sub->{method}, $method);
 
     # query parameter check
