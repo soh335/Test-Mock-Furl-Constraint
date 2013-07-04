@@ -11,7 +11,7 @@ requires 'Test::Builder';
 on 'test' => sub {
     requires 'Test::More', '0.98';
     requires 'Test::Exception';
-    requires 'Plack';
+    requires 'Test::Requires';
     requires 'Test::TCP';
 };
 

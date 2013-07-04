@@ -1,11 +1,12 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::Requires qw(Plack::Loader);
+
 use Test::TCP;
 use Test::Exception;
 use Furl;
 use Test::Mock::Furl::Constraint;
-use Plack::Loader;
 
 my $server = test_tcp(
     client => sub {
