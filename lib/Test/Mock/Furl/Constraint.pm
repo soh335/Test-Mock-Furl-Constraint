@@ -49,8 +49,7 @@ sub reset {
 }
 
 sub __check_query_parameter {
-    my ($sub, $url) = @_;
-    my $expect_query = $sub->{opt}->{query} or return;
+    my ($expect_query, $url) = @_;
 
     my @query_form = $url->query_form();
     my ($ok, $stack) = Test::Deep::cmp_details(\@query_form, $expect_query);
@@ -61,8 +60,7 @@ sub __check_query_parameter {
 }
 
 sub __check_headers {
-    my ($sub, $headers) = @_;
-    my $expect_headers = $sub->{opt}->{headers} or return;
+    my ($expect_headers, $headers) = @_;
 
     my ($ok, $stack) = Test::Deep::cmp_details($headers, $expect_headers);
     unless ( $ok ) {
@@ -72,8 +70,7 @@ sub __check_headers {
 }
 
 sub __check_content {
-    my ($sub, $content) = @_;
-    my $expect_content = $sub->{opt}->{content} or return;
+    my ($expect_content, $content) = @_;
 
     my ($ok, $stack) = Test::Deep::cmp_details($content, $expect_content);
     unless ( $ok ) {
@@ -86,13 +83,19 @@ sub _process {
     my ($sub, $url, $headers, $content) = @_;
 
     # query parameter check
-    __check_query_parameter($sub, $url);
+    if ( my $expect_query = $sub->{opt}->{query} ) {
+        __check_query_parameter($expect_query, $url);
+    }
 
     # header check
-    __check_headers($sub, $headers || []);
+    if ( my $expect_headers = $sub->{opt}->{headers} ) {
+        __check_headers($expect_headers, $headers || []);
+    }
 
     # content check
-    __check_content($sub, $content);
+    if ( my $expect_content = $sub->{opt}->{content} ) {
+        __check_content($expect_content, $content);
+    }
 
     my %sub_res = $sub->{expect}->();
 
