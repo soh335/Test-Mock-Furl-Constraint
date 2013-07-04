@@ -31,16 +31,27 @@ our $EXPECT = {
     },
 };
 
-# ($method, $uri, $opt, $expect)
-sub stub_request {
-    my $class  = shift;
+sub _parse_args {
     my $method = shift || "any";
     my $uri    = shift;
     my $expect = pop;
     my $opt    = shift;
 
-    my $array = $EXPECT->{global}->{"$uri"} ||= [];
-    push @$array, { expect => $expect, opt => $opt || undef, method => $method };
+    +{
+        expect => $expect,
+        uri    => $uri,
+        opt    => $opt || undef,
+        method => $method,
+    };
+}
+
+# ($method, $uri, $opt, $expect)
+sub stub_request {
+    my $class  = shift;
+    my $cond = _parse_args(@_);
+
+    my $array = $EXPECT->{global}->{"$cond->{uri}"} ||= [];
+    push @$array, $cond;
 }
 
 sub reset {
@@ -165,14 +176,11 @@ sub _process {
         as   => 'stub_request',
         code => sub {
             my $self   = shift;
-            my $method = shift || "any";
-            my $uri    = shift;
-            my $expect = pop;
-            my $opt    = shift;
+            my $cond = _parse_args(@_);
 
             my $hash = $EXPECT->{Scalar::Util::refaddr(${$self})} ||= {};
-            my $array = $hash->{"$uri"} ||= [];
-            push @$array, { expect => $expect, opt => $opt || undef, method => $method };
+            my $array = $hash->{"$cond->{uri}"} ||= [];
+            push @$array, $cond;
         },
     });
 
