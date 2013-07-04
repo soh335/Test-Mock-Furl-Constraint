@@ -8,10 +8,9 @@ our $VERSION = "0.01";
 use Test::Builder;
 use Furl;
 
-use Carp;
-use Class::Method::Modifiers qw(install_modifier);
-use Sub::Install qw(install_sub);
-use Scalar::Util qw(refaddr);
+use Class::Method::Modifiers ();
+use Sub::Install ();
+use Scalar::Util ();
 use URI;
 
 use Test::Deep ();
@@ -106,7 +105,7 @@ sub _process {
 
 # install_modifier and install_sub
 {
-    install_modifier('Furl::HTTP', 'around', 'request', sub {
+    Class::Method::Modifiers::install_modifier('Furl::HTTP', 'around', 'request', sub {
         my $orig = shift;
         my $self = shift;
         my %args = @_;
@@ -119,7 +118,7 @@ sub _process {
 
         my $uri = sprintf("%s://%s%s", $url->scheme, $url->authority, $url->path);
 
-        my $addr = refaddr $self;
+        my $addr = Scalar::Util::refaddr $self;
 
         if ( my $lexical_hash = $EXPECT->{$addr} ) {
             if ( my $array = $lexical_hash->{$uri} ) {
@@ -142,7 +141,7 @@ sub _process {
     });
 
     # ($uri, $opt, $expect)
-    install_sub({
+    Sub::Install::install_sub({
         into => 'Furl',
         as   => 'stub_request',
         code => sub {
@@ -151,18 +150,18 @@ sub _process {
             my $expect = pop;
             my $opt    = shift;
 
-            my $hash = $EXPECT->{refaddr(${$self})} ||= {};
+            my $hash = $EXPECT->{Scalar::Util::refaddr(${$self})} ||= {};
             my $array = $hash->{"$uri"} ||= [];
             push @$array, { expect => $expect, opt => $opt || undef };
         },
     });
 
-    install_sub({
+    Sub::Install::install_sub({
         into => 'Furl',
         as   => 'stub_reset',
         code => sub {
             my $self   = shift;
-            $EXPECT->{refaddr(${$self})} = {};
+            $EXPECT->{Scalar::Util::refaddr(${$self})} = {};
         },
     });
 }
