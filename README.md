@@ -25,7 +25,7 @@ Test::Mock::Furl::Constraint - yet another mock module for Furl
     my $furl = Furl->new;
     $furl->stub_request( "http://example.com/foo/bar", sub { });
     my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # ok
-    $furl->stub_reset_all;
+    $furl->stub_reset;
     my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # bad
 
 # DESCRIPTION
