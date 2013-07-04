@@ -8,7 +8,7 @@ use Test::Mock::Furl::Constraint;
 
 subtest 'global' => sub {
     subtest 'any' => sub {
-        Test::Mock::Furl::Constraint->reset;
+        Test::Mock::Furl::Constraint->stub_reset;
         Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
             content => "ok";
         });
@@ -22,7 +22,7 @@ subtest 'global' => sub {
     };
 
     subtest 'not any' => sub {
-        Test::Mock::Furl::Constraint->reset;
+        Test::Mock::Furl::Constraint->stub_reset;
 
         Test::Mock::Furl::Constraint->stub_request( get => "http://example.com", sub {
             content => "ok";

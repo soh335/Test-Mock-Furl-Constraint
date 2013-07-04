@@ -7,8 +7,8 @@ use Furl;
 
 $Test::Mock::Furl::Constraint::DISABLE_EXTERNAL_ACCESS = 1;
 
-subtest 'reset' => sub {
-    Test::Mock::Furl::Constraint->reset;
+subtest 'stub_reset' => sub {
+    Test::Mock::Furl::Constraint->stub_reset;
 
     Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
     });
@@ -16,7 +16,7 @@ subtest 'reset' => sub {
     my $furl = Furl->new;
     my $res = $furl->get("http://example.com");
 
-    Test::Mock::Furl::Constraint->reset;
+    Test::Mock::Furl::Constraint->stub_reset;
 
     throws_ok {
         $furl->get("http://example.com");
@@ -24,7 +24,7 @@ subtest 'reset' => sub {
 };
 
 subtest "override response" => sub {
-    Test::Mock::Furl::Constraint->reset;
+    Test::Mock::Furl::Constraint->stub_reset;
 
     Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
     });
@@ -47,7 +47,7 @@ subtest "override response" => sub {
 };
 
 subtest "case http://example.com" => sub {
-    Test::Mock::Furl::Constraint->reset;
+    Test::Mock::Furl::Constraint->stub_reset;
 
     my $is_call = 0;
     Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
@@ -74,7 +74,7 @@ subtest "case http://example.com" => sub {
 };
 
 subtest "case http://example.com/" => sub {
-    Test::Mock::Furl::Constraint->reset;
+    Test::Mock::Furl::Constraint->stub_reset;
 
     my $is_call = 0;
 
@@ -95,7 +95,7 @@ subtest "case http://example.com/" => sub {
 };
 
 subtest "case http://example.com/foo/bar" => sub {
-    Test::Mock::Furl::Constraint->reset;
+    Test::Mock::Furl::Constraint->stub_reset;
 
     my $is_call = 0;
 
@@ -134,7 +134,7 @@ subtest "case http://example.com/foo/bar" => sub {
 };
 
 subtest 'expect with query parameter' => sub {
-    Test::Mock::Furl::Constraint->reset;
+    Test::Mock::Furl::Constraint->stub_reset;
 
     my $is_call = 0;
 
@@ -167,7 +167,7 @@ subtest 'expect with query parameter' => sub {
 };
 
 subtest 'expect with headers' => sub {
-    Test::Mock::Furl::Constraint->reset;
+    Test::Mock::Furl::Constraint->stub_reset;
 
     my $is_call = 0;
 
@@ -204,7 +204,7 @@ subtest 'expect with headers' => sub {
 };
 
 subtest 'expect with Content' => sub {
-    Test::Mock::Furl::Constraint->reset;
+    Test::Mock::Furl::Constraint->stub_reset;
 
     my $is_call = 0;
 

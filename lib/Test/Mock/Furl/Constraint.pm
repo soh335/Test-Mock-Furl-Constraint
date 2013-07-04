@@ -54,7 +54,7 @@ sub stub_request {
     push @$array, $cond;
 }
 
-sub reset {
+sub stub_reset {
     my ($class) = @_;
     $EXPECT->{global} = {};
 }
