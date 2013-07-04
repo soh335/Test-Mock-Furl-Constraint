@@ -20,13 +20,13 @@ my $res = $furl_2->get("http://example.com");
 is $res->status, 404;
 
 # reset global namespace
-Test::Mock::Furl::Constraint->reset_all;
+Test::Mock::Furl::Constraint->reset;
 
 # sor stil stub
 $res = $furl_2->get("http://example.com");
 is $res->status, 404;
 
-$furl_2->stub_reset_all;
+$furl_2->stub_reset;
 
 throws_ok {
     $furl_2->get("http://example.com");

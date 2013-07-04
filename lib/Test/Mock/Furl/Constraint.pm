@@ -43,7 +43,7 @@ sub add {
     push @$array, { expect => $expect, opt => $opt || undef };
 }
 
-sub reset_all {
+sub reset {
     my ($class) = @_;
     $EXPECT->{global} = {};
 }
@@ -156,7 +156,7 @@ sub _process {
 
     install_sub({
         into => 'Furl',
-        as   => 'stub_reset_all',
+        as   => 'stub_reset',
         code => sub {
             my $self   = shift;
             $EXPECT->{refaddr(${$self})} = {};
