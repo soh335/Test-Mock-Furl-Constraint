@@ -1,14 +1,46 @@
 # NAME
 
-Test::Mock::Furl::Simple - It's new $module
+Test::Mock::Furl::Constraint - It's new $module
 
 # SYNOPSIS
 
-    use Test::Mock::Furl::Simple;
+    use Test::Mock::Furl::Constraint;
+
+    # global
+    Test::Mock::Furl::Constraint->add(
+        "http://example.com/foo/bar",
+        {
+            query => [ dameleon => 1 ], headers => ...., content => ....
+        },
+        sub {
+            content => ..., header => ....,;
+        },
+    );
+
+    my $furl = Furl->new;
+    my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # bad
+    my $res = $furl->get("http://example.com/foo/bar?dameleon=1"); # success
+
+    # lexical
+    my $furl = Furl->new;
+    $furl->stub_request( "http://example.com/foo/bar", sub { });
+    my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # ok
+    $furl->stub_reset_all;
+    my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # bad
 
 # DESCRIPTION
 
-Test::Mock::Furl::Simple is ...
+Test::Mock::Furl::Constraint is yet another mock module for Furl
+
+# SEE ALSO
+
+[Furl](http://search.cpan.org/perldoc?Furl)
+
+[Test::Mock::Furl](http://search.cpan.org/perldoc?Test::Mock::Furl)
+
+[Test::Mock::LWP::Conditional](http://search.cpan.org/perldoc?Test::Mock::LWP::Conditional)
+
+[https://github.com/bblimke/webmock](https://github.com/bblimke/webmock)
 
 # LICENSE
 
