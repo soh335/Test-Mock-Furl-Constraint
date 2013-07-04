@@ -26,7 +26,7 @@ my %default_response = (
 
 our $DISABLE_EXTERNAL_ACCESS = 1;
 
-our $EXPECT = {
+our $COND = {
     global => {
     },
 };
@@ -35,13 +35,13 @@ sub stub_request {
     my $class  = shift;
     my $cond = _parse_args(@_);
 
-    my $array = $EXPECT->{global}->{"$cond->{uri}"} ||= [];
-    push @$array, $cond;
+    my $conds = $COND->{global}->{"$cond->{uri}"} ||= [];
+    push @$conds, $cond;
 }
 
 sub stub_reset {
     my ($class) = @_;
-    $EXPECT->{global} = {};
+    $COND->{global} = {};
 }
 
 # install_modifier and install_sub
@@ -61,16 +61,16 @@ sub stub_reset {
 
         my $addr = Scalar::Util::refaddr $self;
 
-        if ( my $lexical_hash = $EXPECT->{$addr} ) {
-            if ( my $array = $lexical_hash->{$uri} ) {
-                my $sub = @$array > 1 ? shift @$array : $array->[0];
-                return _process($sub, $args{method}, $url, $args{headers} || [], $args{content});
+        if ( my $lexical_hash = $COND->{$addr} ) {
+            if ( my $conds = $lexical_hash->{$uri} ) {
+                my $cond = @$conds > 1 ? shift @$conds : $conds->[0];
+                return _process($cond, $args{method}, $url, $args{headers} || [], $args{content});
             }
         }
 
-        if ( my $array = $EXPECT->{global}->{$uri} ) {
-            my $sub = @$array > 1 ? shift @$array : $array->[0];
-            return _process($sub, $args{method}, $url, $args{headers} || [], $args{content});
+        if ( my $conds = $COND->{global}->{$uri} ) {
+            my $cond = @$conds > 1 ? shift @$conds : $conds->[0];
+            return _process($cond, $args{method}, $url, $args{headers} || [], $args{content});
         }
 
         if ( $DISABLE_EXTERNAL_ACCESS ) {
@@ -88,9 +88,9 @@ sub stub_reset {
             my $self   = shift;
             my $cond = _parse_args(@_);
 
-            my $hash = $EXPECT->{Scalar::Util::refaddr(${$self})} ||= {};
-            my $array = $hash->{"$cond->{uri}"} ||= [];
-            push @$array, $cond;
+            my $hash = $COND->{Scalar::Util::refaddr(${$self})} ||= {};
+            my $conds = $hash->{"$cond->{uri}"} ||= [];
+            push @$conds, $cond;
         },
     });
 
@@ -99,7 +99,7 @@ sub stub_reset {
         as   => 'stub_reset',
         code => sub {
             my $self   = shift;
-            $EXPECT->{Scalar::Util::refaddr(${$self})} = {};
+            $COND->{Scalar::Util::refaddr(${$self})} = {};
         },
     });
 }
@@ -120,27 +120,27 @@ sub _parse_args {
 }
 
 sub _process {
-    my ($sub, $method, $url, $headers, $content) = @_;
+    my ($cond, $method, $url, $headers, $content) = @_;
 
     # method check
-    __check_method($sub->{method}, $method);
+    __check_method($cond->{method}, $method);
 
     # query parameter check
-    if ( my $expect_query = $sub->{opt}->{query} ) {
+    if ( my $expect_query = $cond->{opt}->{query} ) {
         __check_query_parameter($expect_query, $url);
     }
 
     # header check
-    if ( my $expect_headers = $sub->{opt}->{headers} ) {
+    if ( my $expect_headers = $cond->{opt}->{headers} ) {
         __check_headers($expect_headers, $headers || []);
     }
 
     # content check
-    if ( my $expect_content = $sub->{opt}->{content} ) {
+    if ( my $expect_content = $cond->{opt}->{content} ) {
         __check_content($expect_content, $content);
     }
 
-    my %sub_res = $sub->{expect}->();
+    my %sub_res = $cond->{expect}->();
 
     my %merged_res = (%default_response, %sub_res);
 
