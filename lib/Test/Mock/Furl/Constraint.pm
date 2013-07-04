@@ -201,7 +201,17 @@ Test::Mock::Furl::Constraint - It's new $module
 
 =head1 DESCRIPTION
 
-Test::Mock::Furl::Constraint is ...
+Test::Mock::Furl::Constraint is yet another mock module for Furl
+
+=head1 SEE ALSO
+
+L<Furl>
+
+L<Test::Mock::Furl>
+
+L<Test::Mock::LWP::Conditional>
+
+L<https://github.com/bblimke/webmock>
 
 =head1 LICENSE
 

@@ -30,7 +30,17 @@ Test::Mock::Furl::Constraint - It's new $module
 
 # DESCRIPTION
 
-Test::Mock::Furl::Constraint is ...
+Test::Mock::Furl::Constraint is yet another mock module for Furl
+
+# SEE ALSO
+
+[Furl](http://search.cpan.org/perldoc?Furl)
+
+[Test::Mock::Furl](http://search.cpan.org/perldoc?Test::Mock::Furl)
+
+[Test::Mock::LWP::Conditional](http://search.cpan.org/perldoc?Test::Mock::LWP::Conditional)
+
+[https://github.com/bblimke/webmock](https://github.com/bblimke/webmock)
 
 # LICENSE
 
