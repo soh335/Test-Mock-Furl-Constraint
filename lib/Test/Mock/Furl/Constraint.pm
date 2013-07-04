@@ -64,13 +64,13 @@ sub stub_reset {
         if ( my $lexical_hash = $COND->{$addr} ) {
             if ( my $conds = $lexical_hash->{$uri} ) {
                 my $cond = @$conds > 1 ? shift @$conds : $conds->[0];
-                return _process($cond, $args{method}, $url, $args{headers} || [], $args{content});
+                return _process($cond, \%args, $url);
             }
         }
 
         if ( my $conds = $COND->{global}->{$uri} ) {
             my $cond = @$conds > 1 ? shift @$conds : $conds->[0];
-            return _process($cond, $args{method}, $url, $args{headers} || [], $args{content});
+            return _process($cond, \%args, $url);
         }
 
         if ( $DISABLE_EXTERNAL_ACCESS ) {
@@ -120,10 +120,10 @@ sub _parse_args {
 }
 
 sub _process {
-    my ($cond, $method, $url, $headers, $content) = @_;
+    my ($cond, $args, $url) = @_;
 
     # method check
-    __check_method($cond->{method}, $method);
+    __check_method($cond->{method}, $args->{method});
 
     # query parameter check
     if ( my $expect_query = $cond->{opt}->{query} ) {
@@ -132,12 +132,12 @@ sub _process {
 
     # header check
     if ( my $expect_headers = $cond->{opt}->{headers} ) {
-        __check_headers($expect_headers, $headers || []);
+        __check_headers($expect_headers, $args->{headers} || []);
     }
 
     # content check
     if ( my $expect_content = $cond->{opt}->{content} ) {
-        __check_content($expect_content, $content);
+        __check_content($expect_content, $args->{content});
     }
 
     my %sub_res = $cond->{expect}->();
