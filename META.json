@@ -42,15 +42,28 @@
       },
       "runtime" : {
          "requires" : {
+            "Class::Method::Modifiers" : "0",
+            "Furl" : "0",
+            "Scalar::Util" : "0",
+            "Sub::Install" : "0",
+            "Test::Builder" : "0",
+            "Test::Deep" : "0",
+            "URI" : "0",
             "perl" : "5.008005"
          }
       },
       "test" : {
          "requires" : {
-            "Test::More" : "0.98"
+            "Plack" : "0",
+            "Test::Exception" : "0",
+            "Test::More" : "0.98",
+            "Test::TCP" : "0"
          }
       }
    },
    "release_status" : "unstable",
-   "version" : "0.01"
+   "version" : "0.01",
+   "x_contributors" : [
+      "soh335 <sugarbabe335@gmail.com>"
+   ]
 }
