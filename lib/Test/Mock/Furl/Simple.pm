@@ -181,7 +181,7 @@ Test::Mock::Furl::Simple - It's new $module
     Test::Mock::Furl::Simple->add(
         "http://example.com/foo/bar",
         {
-            query => { dameleon => 1 }, headers => ...., content => ....
+            query => [ dameleon => 1 ], headers => ...., content => ....
         },
         sub {
             content => ..., header => ....,;
