@@ -7,7 +7,7 @@ Test::Mock::Furl::Constraint - yet another mock module for Furl
     use Test::Mock::Furl::Constraint;
 
     # global
-    Test::Mock::Furl::Constraint->add(
+    Test::Mock::Furl::Constraint->stub_request(
         "http://example.com/foo/bar",
         {
             query => [ dameleon => 1 ], headers => ...., content => ....

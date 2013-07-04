@@ -33,7 +33,7 @@ our $EXPECT = {
 };
 
 # ($uri, $opt, $expect)
-sub add {
+sub stub_request {
     my $class  = shift;
     my $uri    = shift;
     my $expect = pop;
@@ -181,7 +181,7 @@ Test::Mock::Furl::Constraint - yet another mock module for Furl
     use Test::Mock::Furl::Constraint;
 
     # global
-    Test::Mock::Furl::Constraint->add(
+    Test::Mock::Furl::Constraint->stub_request(
         "http://example.com/foo/bar",
         {
             query => [ dameleon => 1 ], headers => ...., content => ....
