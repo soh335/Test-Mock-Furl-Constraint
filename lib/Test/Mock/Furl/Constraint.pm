@@ -31,6 +31,7 @@ our $EXPECT = {
     },
 };
 
+# ($method, $uri, $opt, $expect)
 sub _parse_args {
     my $method = shift || "any";
     my $uri    = shift;
@@ -45,7 +46,6 @@ sub _parse_args {
     };
 }
 
-# ($method, $uri, $opt, $expect)
 sub stub_request {
     my $class  = shift;
     my $cond = _parse_args(@_);
@@ -169,7 +169,6 @@ sub _process {
         }
     });
 
-    # ($method, $uri, $opt, $expect)
     Sub::Install::install_sub({
         into => 'Furl',
         as   => 'stub_request',
