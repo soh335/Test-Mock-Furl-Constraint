@@ -213,7 +213,7 @@ Test::Mock::Furl::Constraint - yet another mock module for Furl
             query => [ dameleon => 1 ], headers => ...., content => ....
         },
         sub {
-            content => ..., header => ....,;
+            content => ..., headers => ....,;
         },
     );
 
