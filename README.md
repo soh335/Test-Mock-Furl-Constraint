@@ -37,11 +37,11 @@ It provides mock interface for [Furl](http://search.cpan.org/perldoc?Furl).
 
 - Test::Mock::Furl::Constraint->stub\_request( method => url, { query => \[...\], headers => \[...\], content => \[\] }, sub { content => 200 } )
 
-    stub Furl::HTTP::request by url. if passed `<method`\> as "any" or `<method`\> equal to your request method, stub is accepted. But, if your method not equal to `<method`\>, croak from stub.
+    stub Furl::HTTP::request by url. if passed `method` as "any" or `method` equal to your request method, stub is accepted. But, if your method not equal to `method`, croak from stub.
 
     `{ query => [...], headers => [...], content => [...] }` is optional condition for stub. Also these condition keys is optional. If you add stub with these optional condition and incorrect request by furl, croak from stub.
 
-    You also can stub specific furl instance to call stub\_request method of `<$furl`\> instance. It is higher priority than `<Test::Mock::Furl::Constraint-`stub\_request>>.
+    You also can stub specific furl instance to call stub\_request method of `$furl` instance. It is higher priority than `Test::Mock::Furl::Constraint->stub_request`.
 
 - Test::Mock::Furl::Constraint->stub\_reset
 
