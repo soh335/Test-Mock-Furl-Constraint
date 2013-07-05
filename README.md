@@ -43,6 +43,18 @@ It provides mock interface for [Furl](http://search.cpan.org/perldoc?Furl).
 
     You also can stub specific furl instance to call stub\_request method of `$furl` instance. It is higher priority than `Test::Mock::Furl::Constraint->stub_request`.
 
+    Default response of stub is this.
+
+        (
+            minor_version => "0",
+            status        => 200,
+            msg           => "ok",
+            headers       => [],
+            content       => "",
+        )
+
+    You can override response in `sub { ... }`.
+
 - Test::Mock::Furl::Constraint->stub\_reset
 
     reset your stub.

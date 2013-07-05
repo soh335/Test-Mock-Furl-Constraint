@@ -245,6 +245,18 @@ C<< { query => [...], headers => [...], content => [...] } >> is optional condit
 
 You also can stub specific furl instance to call stub_request method of C<< $furl >> instance. It is higher priority than C<< Test::Mock::Furl::Constraint->stub_request >>.
 
+Default response of stub is this.
+
+    (
+        minor_version => "0",
+        status        => 200,
+        msg           => "ok",
+        headers       => [],
+        content       => "",
+    )
+
+You can override response in C<< sub { ... } >>.
+
 =item Test::Mock::Furl::Constraint->stub_reset
 
 reset your stub.
