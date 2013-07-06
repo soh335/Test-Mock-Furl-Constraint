@@ -25,7 +25,7 @@ our $COND = {
 
 sub stub_request {
     my $class  = shift;
-    my ($uri, $cond) = _parse_args(@_);
+    my ($uri, $cond) = _build_from_args(@_);
 
     $COND->{global}->{"$uri"} = $cond;
 }
@@ -75,7 +75,7 @@ sub stub_reset {
         as   => 'stub_request',
         code => sub {
             my $self   = shift;
-            my ($uri, $cond) = _parse_args(@_);
+            my ($uri, $cond) = _build_from_args(@_);
 
             my $hash = $COND->{Scalar::Util::refaddr(${$self})} ||= {};
             $hash->{"$uri"} = $cond;
@@ -93,7 +93,7 @@ sub stub_reset {
 }
 
 # ($method, $uri, $opt)
-sub _parse_args {
+sub _build_from_args {
     my $method = shift;
     my $uri    = shift;
     my $opt    = shift || {};
