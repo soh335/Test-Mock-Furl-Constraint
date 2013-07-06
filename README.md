@@ -10,23 +10,24 @@ Test::Mock::Furl::Constraint - yet another mock module for Furl
     Test::Mock::Furl::Constraint->stub_request(
         any => "http://example.com/foo/bar",
         {
-            query => [ dameleon => 1 ], headers => ...., content => ....
+            query => [ baz => 1 ], headers => ...., content => ....
         },
-        sub {
-            content => ..., header => ....,;
-        },
-    );
+    )->add(  sub {
+        content => ..., headers => ....,;
+    })->add( sub {
+        content => ..., headers => ....,;
+    });
 
     my $furl = Furl->new;
-    my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # bad
-    my $res = $furl->get("http://example.com/foo/bar?dameleon=1"); # success
+    my $res = $furl->get("http://example.com/foo/bar?baz=0"); # bad
+    my $res = $furl->get("http://example.com/foo/bar?baz=1"); # success
 
     # lexical
     my $furl = Furl->new;
-    $furl->stub_request( get => "http://example.com/foo/bar", sub { });
-    my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # ok
+    $furl->stub_request( get => "http://example.com/foo/bar" );
+    my $res = $furl->get("http://example.com/foo/bar?baz=0"); # ok
     $furl->stub_reset;
-    my $res = $furl->get("http://example.com/foo/bar?dameleon=0"); # bad
+    my $res = $furl->get("http://example.com/foo/bar?baz=0"); # bad
 
 # DESCRIPTION
 
@@ -35,15 +36,15 @@ It provides mock interface for [Furl](http://search.cpan.org/perldoc?Furl).
 
 ## METHODS
 
-- Test::Mock::Furl::Constraint->stub\_request( method => url, { query => \[...\], headers => \[...\], content => \[\] }, sub { content => 200 } )
+- Test::Mock::Furl::Constraint->stub\_request( method => url, { query => \[...\], headers => \[...\], content => \[\] })
 
-    stub Furl::HTTP::request by url. if passed `method` as "any" or `method` equal to your request method, stub is accepted. But, if your method not equal to `method`, croak from stub.
+    stub Furl::HTTP::request by `url`. if passed `method` as "any" or `method` equal to your request method, stub is accepted. But, if your method not equal to `method`, croak from stub.
 
     `{ query => [...], headers => [...], content => [...] }` is optional condition for stub. Also these condition keys is optional. If you add stub with these optional condition and incorrect request by furl, croak from stub.
 
     You also can stub specific furl instance to call stub\_request method of `$furl` instance. It is higher priority than `Test::Mock::Furl::Constraint->stub_request`.
 
-    Default response of stub is this.
+    Default mocked response from stub is this.
 
         (
             minor_version => "0",
@@ -53,7 +54,17 @@ It provides mock interface for [Furl](http://search.cpan.org/perldoc?Furl).
             content       => "",
         )
 
-    You can override response in `sub { ... }`.
+    This method return `Test::Mock::Furl::Constraint::Cond`. And you can override response by calling `add` method of it like this.
+
+        Test::Mock::Furl::Constraint->stub_request(
+            method => url
+        )->add( sub {
+            content => ..., msg => ..., status ...,
+        })->add( sub {
+            content => ...
+        });
+
+    If you call `add` method multiply, mocked response is changed order by calling this method. And in this case, Thirdly furl request return twice mocked response ( it is last mocked response ).
 
 - Test::Mock::Furl::Constraint->stub\_reset
 
