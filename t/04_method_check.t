@@ -9,7 +9,7 @@ use Test::Mock::Furl::Constraint;
 subtest 'global' => sub {
     subtest 'any' => sub {
         Test::Mock::Furl::Constraint->stub_reset;
-        Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
+        Test::Mock::Furl::Constraint->stub_request( any => "http://example.com" )->add( sub {
             content => "ok";
         });
 
@@ -24,7 +24,7 @@ subtest 'global' => sub {
     subtest 'not any' => sub {
         Test::Mock::Furl::Constraint->stub_reset;
 
-        Test::Mock::Furl::Constraint->stub_request( get => "http://example.com", sub {
+        Test::Mock::Furl::Constraint->stub_request( get => "http://example.com" )->add( sub {
             content => "ok";
         });
 
@@ -43,7 +43,7 @@ subtest 'lexical' => sub {
     subtest 'any' => sub {
 
         my $furl = Furl->new;
-        $furl->stub_request( any => "http://example.com", sub {
+        $furl->stub_request( any => "http://example.com" )->add( sub {
             content => "ok";
         });
 
@@ -56,7 +56,7 @@ subtest 'lexical' => sub {
 
     subtest 'not any' => sub {
         my $furl = Furl->new;
-        $furl->stub_request( get => "http://example.com", sub {
+        $furl->stub_request( get => "http://example.com" )->add( sub {
             content => "ok";
         });
 

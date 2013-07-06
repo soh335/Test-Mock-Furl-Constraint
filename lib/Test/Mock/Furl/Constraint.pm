@@ -16,14 +16,6 @@ use URI;
 use Test::Deep ();
 
 my $Tester = Test::Builder->new;
-my %default_response = (
-    minor_version => "0",
-    status        => 200,
-    msg           => "ok",
-    headers       => [],
-    content       => "",
-);
-
 our $DISABLE_EXTERNAL_ACCESS = 1;
 
 our $COND = {
@@ -33,10 +25,9 @@ our $COND = {
 
 sub stub_request {
     my $class  = shift;
-    my $cond = _parse_args(@_);
+    my ($uri, $cond) = _parse_args(@_);
 
-    my $conds = $COND->{global}->{"$cond->{uri}"} ||= [];
-    push @$conds, $cond;
+    $COND->{global}->{"$uri"} = $cond;
 }
 
 sub stub_reset {
@@ -62,14 +53,12 @@ sub stub_reset {
         my $addr = Scalar::Util::refaddr $self;
 
         if ( my $lexical_hash = $COND->{$addr} ) {
-            if ( my $conds = $lexical_hash->{$uri} ) {
-                my $cond = @$conds > 1 ? shift @$conds : $conds->[0];
+            if ( my $cond = $lexical_hash->{$uri} ) {
                 return _process($cond, \%args, $url);
             }
         }
 
-        if ( my $conds = $COND->{global}->{$uri} ) {
-            my $cond = @$conds > 1 ? shift @$conds : $conds->[0];
+        if ( my $cond = $COND->{global}->{$uri} ) {
             return _process($cond, \%args, $url);
         }
 
@@ -86,11 +75,10 @@ sub stub_reset {
         as   => 'stub_request',
         code => sub {
             my $self   = shift;
-            my $cond = _parse_args(@_);
+            my ($uri, $cond) = _parse_args(@_);
 
             my $hash = $COND->{Scalar::Util::refaddr(${$self})} ||= {};
-            my $conds = $hash->{"$cond->{uri}"} ||= [];
-            push @$conds, $cond;
+            $hash->{"$uri"} = $cond;
         },
     });
 
@@ -104,49 +92,45 @@ sub stub_reset {
     });
 }
 
-# ($method, $uri, $opt, $expect)
+# ($method, $uri, $opt)
 sub _parse_args {
-    my $method = shift || "any";
+    my $method = shift;
     my $uri    = shift;
-    my $expect = pop;
-    my $opt    = shift;
+    my $opt    = shift || {};
 
-    +{
-        expect => $expect,
-        uri    => $uri,
-        opt    => $opt || undef,
-        method => $method,
-    };
+    my $cond = Test::Mock::Furl::Constraint::Cond->new(
+        method  => $method,
+        headers => $opt->{headers} || undef,
+        content => $opt->{content} || undef,
+        query   => $opt->{query}   || undef,
+    );
+
+    ($uri, $cond);
 }
 
 sub _process {
     my ($cond, $args, $url) = @_;
 
     # method check
-    __check_method($cond->{method}, $args->{method});
+    __check_method($cond->method, $args->{method});
 
     # query parameter check
-    if ( my $expect_query = $cond->{opt}->{query} ) {
+    if ( my $expect_query = $cond->query ) {
         __check_query_parameter($expect_query, $url);
     }
 
     # header check
-    if ( my $expect_headers = $cond->{opt}->{headers} ) {
+    if ( my $expect_headers = $cond->headers ) {
         __check_headers($expect_headers, $args->{headers} || []);
     }
 
     # content check
-    if ( my $expect_content = $cond->{opt}->{content} ) {
+    if ( my $expect_content = $cond->content ) {
         __check_content($expect_content, $args->{content});
     }
 
-    my %sub_res = $cond->{expect}->();
-
-    my %merged_res = (%default_response, %sub_res);
-
-    return map { $merged_res{$_} } qw(minor_version status msg headers content);
+    $cond->take_response;
 }
-
 
 sub __check_query_parameter {
     my ($expect_query, $url) = @_;
@@ -193,6 +177,57 @@ sub __check_method {
     }
 }
 
+package Test::Mock::Furl::Constraint::Cond;
+
+use Class::Accessor::Lite (
+    new => 1,
+    ro  => [qw/headers content query method/],
+);
+
+sub _response_list {
+    my $self = shift;
+    $self->{__response_list} ||= [];
+}
+
+sub add_response {
+    my ($self, $response) = @_;
+    push @{ $self->_response_list }, $response;
+    $self;
+}
+
+{
+    no warnings 'once';
+    *add = \&add_response;
+}
+
+sub take_response {
+    my ($self) = @_;
+
+    my $list = $self->_response_list;
+
+    my %response = (
+        minor_version => "0",
+        status        => 200,
+        msg           => "ok",
+        headers       => [],
+        content       => "",
+    );
+
+    my $cond;
+    if ( scalar @$list == 1 ) {
+        $cond = $list->[0];
+    }
+    elsif ( scalar @$list > 1 ) {
+        $cond = shift @$list;
+    }
+
+    if ( $cond ) {
+        %response = (%response, $cond->());
+    }
+
+    return map { $response{$_} } qw(minor_version status msg headers content);
+}
+
 1;
 __END__
 
@@ -212,10 +247,11 @@ Test::Mock::Furl::Constraint - yet another mock module for Furl
         {
             query => [ baz => 1 ], headers => ...., content => ....
         },
-        sub {
-            content => ..., headers => ....,;
-        },
-    );
+    )->add(  sub {
+        content => ..., headers => ....,;
+    })->add( sub {
+        content => ..., headers => ....,;
+    });
 
     my $furl = Furl->new;
     my $res = $furl->get("http://example.com/foo/bar?baz=0"); # bad
@@ -223,7 +259,7 @@ Test::Mock::Furl::Constraint - yet another mock module for Furl
 
     # lexical
     my $furl = Furl->new;
-    $furl->stub_request( get => "http://example.com/foo/bar", sub { });
+    $furl->stub_request( get => "http://example.com/foo/bar" );
     my $res = $furl->get("http://example.com/foo/bar?baz=0"); # ok
     $furl->stub_reset;
     my $res = $furl->get("http://example.com/foo/bar?baz=0"); # bad

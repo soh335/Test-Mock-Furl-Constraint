@@ -10,8 +10,7 @@ $Test::Mock::Furl::Constraint::DISABLE_EXTERNAL_ACCESS = 1;
 subtest 'stub_reset' => sub {
     Test::Mock::Furl::Constraint->stub_reset;
 
-    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
-    });
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com" );
 
     my $furl = Furl->new;
     my $res = $furl->get("http://example.com");
@@ -26,11 +25,9 @@ subtest 'stub_reset' => sub {
 subtest "override response" => sub {
     Test::Mock::Furl::Constraint->stub_reset;
 
-    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
-    });
-    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
-        status => 404, content => "not found", headers => [ 'content-length' => 9 ];
-    });
+    Test::Mock::Furl::Constraint->stub_request(
+        any => "http://example.com"
+    );
 
     my $furl = Furl->new;
     my $res = $furl->get("http://example.com");
@@ -38,6 +35,12 @@ subtest "override response" => sub {
     is $res->code, 200;
     is_deeply [$res->headers->flatten], [];
     is $res->protocol, "HTTP/1.0";
+
+    Test::Mock::Furl::Constraint->stub_request(
+        any => "http://example.com"
+    )->add( sub {
+        status => 404, content => "not found", headers => [ 'content-length' => 9 ];
+    });
 
     $res = $furl->get("http://example.com");
     is $res->content, "not found";
@@ -50,11 +53,12 @@ subtest "case http://example.com" => sub {
     Test::Mock::Furl::Constraint->stub_reset;
 
     my $is_call = 0;
-    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
+    Test::Mock::Furl::Constraint->stub_request(
+        any => "http://example.com"
+    )->add( sub {
         $is_call++;
         content => "first content";
-    });
-    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com", sub {
+    })->add( sub {
         $is_call++;
         content => "second content";
     });
@@ -76,12 +80,7 @@ subtest "case http://example.com" => sub {
 subtest "case http://example.com/" => sub {
     Test::Mock::Furl::Constraint->stub_reset;
 
-    my $is_call = 0;
-
-    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/", sub {
-        $is_call++;
-        content => "first content";
-    });
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/" );
 
     my $furl = Furl->new;
 
@@ -90,19 +89,13 @@ subtest "case http://example.com/" => sub {
     } qr/^disabled external access/;
 
     my $res = $furl->get("http://example.com/");
-    is $is_call, 1;
-    is $res->content, "first content";
+    is $res->code, 200;
 };
 
 subtest "case http://example.com/foo/bar" => sub {
     Test::Mock::Furl::Constraint->stub_reset;
 
-    my $is_call = 0;
-
-    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/foo/bar", sub {
-        $is_call++;
-        content => "first content";
-    });
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/foo/bar" );
 
     my $furl = Furl->new;
 
@@ -111,25 +104,21 @@ subtest "case http://example.com/foo/bar" => sub {
     } qr/^disabled external access/;
 
     my $res = $furl->get("http://example.com/foo/bar");
-    is $is_call, 1;
-    is $res->content, "first content";
+    is $res->code, 200;
 
     subtest 'with query parameter' => sub {
         my $res = $furl->get("http://example.com/foo/bar?dameleon=1");
-        is $is_call, 2;
-        is $res->content, "first content";
+        is $res->code, 200;
     };
 
     subtest 'with hash' => sub {
         my $res = $furl->get("http://example.com/foo/bar#baba");
-        is $is_call, 3;
-        is $res->content, "first content";
+        is $res->code, 200;
     };
 
     subtest 'with content' => sub {
         my $res = $furl->post("http://example.com/foo/bar",[], [dameleon => 1]);
-        is $is_call, 4;
-        is $res->content, "first content";
+        is $res->code, 200;
     };
 };
 
@@ -140,9 +129,6 @@ subtest 'expect with query parameter' => sub {
 
     Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/foo/bar", {
         query => [ dameleon => 1 ],
-    }, sub {
-        $is_call++;
-        content => "first content";
     });
 
     my $furl = Furl->new;
@@ -161,21 +147,15 @@ subtest 'expect with query parameter' => sub {
 
     subtest "success" => sub {
         my $res = $furl->get("http://example.com/foo/bar?dameleon=1");
-        is $is_call, 1;
-        is $res->content, "first content";
+        is $res->code, 200;
     };
 };
 
 subtest 'expect with headers' => sub {
     Test::Mock::Furl::Constraint->stub_reset;
 
-    my $is_call = 0;
-
     Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/foo/bar", {
         headers => [ 'Accept-Encoding' => 'gzip' ],
-    }, sub {
-        $is_call++;
-        content => "first content";
     });
 
     my $furl = Furl->new;
@@ -198,21 +178,15 @@ subtest 'expect with headers' => sub {
         my $res = $furl->get("http://example.com/foo/bar?dameleon=1",[
             'Accept-Encoding' => 'gzip',
         ]);
-        is $is_call, 1;
-        is $res->content, "first content";
+        is $res->code, 200;
     };
 };
 
 subtest 'expect with Content' => sub {
     Test::Mock::Furl::Constraint->stub_reset;
 
-    my $is_call = 0;
-
     Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/foo/bar", {
         content => [dameleon => 1],
-    }, sub {
-        $is_call++;
-        content => "first content";
     });
 
     my $furl = Furl->new;
@@ -231,8 +205,7 @@ subtest 'expect with Content' => sub {
 
     subtest "success" => sub {
         my $res = $furl->post("http://example.com/foo/bar?dameleon=1",[], [ dameleon => 1 ]);
-        is $is_call, 1;
-        is $res->content, "first content";
+        is $res->code, 200;
     };
 };
 

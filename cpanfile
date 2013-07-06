@@ -7,6 +7,7 @@ requires 'Scalar::Util';
 requires 'URI';
 requires 'Test::Deep';
 requires 'Test::Builder';
+requires 'Class::Accessor::Lite';
 
 on 'test' => sub {
     requires 'Test::More', '0.98';
