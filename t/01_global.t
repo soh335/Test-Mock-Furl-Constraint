@@ -22,7 +22,7 @@ subtest 'stub_reset' => sub {
     } qr/^disabled external access/;
 };
 
-subtest "override response" => sub {
+subtest "override response by url" => sub {
     Test::Mock::Furl::Constraint->stub_reset;
 
     Test::Mock::Furl::Constraint->stub_request(
@@ -49,7 +49,7 @@ subtest "override response" => sub {
     is $res->protocol, "HTTP/1.0";
 };
 
-subtest "case http://example.com" => sub {
+subtest 'sequential mock response' => sub {
     Test::Mock::Furl::Constraint->stub_reset;
 
     my $is_call = 0;
@@ -75,6 +75,17 @@ subtest "case http://example.com" => sub {
     $res = $furl->get("http://example.com");
     is $is_call, 3;
     is $res->content, "second content", "use latest expect";
+};
+
+subtest "case http://example.com" => sub {
+    Test::Mock::Furl::Constraint->stub_reset;
+
+    my $is_call = 0;
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com" );
+
+    my $furl = Furl->new;
+    my $res = $furl->get("http://example.com");
+    is $res->code, 200;
 };
 
 subtest "case http://example.com/" => sub {
@@ -205,6 +216,37 @@ subtest 'expect with Content' => sub {
 
     subtest "success" => sub {
         my $res = $furl->post("http://example.com/foo/bar?dameleon=1",[], [ dameleon => 1 ]);
+        is $res->code, 200;
+    };
+};
+
+subtest 'expect with mutiple conditions' => sub {
+    Test::Mock::Furl::Constraint->stub_reset;
+
+    Test::Mock::Furl::Constraint->stub_request( any => "http://example.com/foo/bar", {
+        headers => ["x-dameleon" => 1], query => [ baz => 2 ],
+    });
+
+    my $furl = Furl->new;
+
+    subtest "failed" => sub {
+        throws_ok {
+            my $res = $furl->get("http://example.com/foo/bar");
+        } qr/^query parameter compared is failed/;
+    };
+
+    subtest "invalid value" => sub {
+        throws_ok {
+            my $res = $furl->get("http://example.com/foo/bar",[ "x-dameleon" => 0 ]);
+        } qr/^query parameter compared is failed/;
+
+        throws_ok {
+            my $res = $furl->get("http://example.com/foo/bar",[ "x-dameleon" => 1,]);
+        } qr/^query parameter compared is failed/;
+    };
+
+    subtest "success" => sub {
+        my $res = $furl->get("http://example.com/foo/bar?baz=2", [ "x-dameleon" => 1 ]);
         is $res->code, 200;
     };
 };
