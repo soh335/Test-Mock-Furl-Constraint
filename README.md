@@ -64,7 +64,7 @@ It provides mock interface for [Furl](http://search.cpan.org/perldoc?Furl).
             content => ...
         });
 
-    If you call `add` method multiply, mocked response is changed order by calling this method. And in this case, Thirdly furl request return twice mocked response ( it is last mocked response ).
+    If you call `add` method multiply, mocked response is changed order by calling this method. And in this case, Third furl request return second mocked response ( it is last mocked response ).
 
 - Test::Mock::Furl::Constraint->stub\_reset
 

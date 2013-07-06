@@ -301,7 +301,7 @@ This method return C<< Test::Mock::Furl::Constraint::Cond >>. And you can overri
         content => ...
     });
 
-If you call C<< add >> method multiply, mocked response is changed order by calling this method. And in this case, Thirdly furl request return twice mocked response ( it is last mocked response ).
+If you call C<< add >> method multiply, mocked response is changed order by calling this method. And in this case, Third furl request return second mocked response ( it is last mocked response ).
 
 =item Test::Mock::Furl::Constraint->stub_reset
 
