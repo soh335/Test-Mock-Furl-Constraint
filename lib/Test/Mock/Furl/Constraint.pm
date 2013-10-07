@@ -43,7 +43,7 @@ sub stub_reset {
         my %args = @_;
 
         unless ( $args{url} ) {
-            $Tester->croak("Test::Furl::Stub::Constraint is not supported style that no passing url parameter to Furl::HTTP::request .");
+            $Tester->croak("Test::Mock::Furl::Constraint is not supported style that no passing url parameter to Furl::HTTP::request .");
         }
 
         my $url = URI->new($args{url});
@@ -341,4 +341,3 @@ it under the same terms as Perl itself.
 soh335 E<lt>sugarbabe335@gmail.comE<gt>
 
 =cut
-
